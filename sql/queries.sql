@@ -108,3 +108,34 @@ ORDER BY
         WHEN 'Medium' THEN 2
         WHEN 'Low' THEN 3
     END;
+ 
+-- (h) Business question: How does the number of monthly active users change month over month?
+WITH monthly_active_users AS (
+    SELECT
+        strftime('%Y-%m', txn_date) AS month,
+        COUNT(DISTINCT user_id) AS active_users
+    FROM transactions
+    GROUP BY strftime('%Y-%m', txn_date)
+),
+monthly_comparison AS (
+    SELECT
+        month,
+        active_users,
+        LAG(active_users) OVER (
+            ORDER BY month
+        ) AS previous_month_active_users
+    FROM monthly_active_users
+)
+SELECT
+    month,
+    active_users,
+    previous_month_active_users,
+    active_users - previous_month_active_users AS change_in_active_users,
+    CASE
+        WHEN previous_month_active_users IS NULL THEN 'No previous month'
+        WHEN active_users > previous_month_active_users THEN 'Increased'
+        WHEN active_users < previous_month_active_users THEN 'Decreased'
+        ELSE 'No change'
+    END AS month_over_month_status
+FROM monthly_comparison
+ORDER BY month;
