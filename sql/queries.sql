@@ -16,3 +16,14 @@ SELECT
 FROM transactions
 GROUP BY product
 ORDER BY total_transaction_value DESC;
+ 
+-- (b) Business question: Which five counties have the highest total transaction value?
+SELECT
+    u.county,
+    SUM(t.amount) AS total_transaction_value
+FROM transactions AS t
+JOIN users AS u
+    ON t.user_id = u.user_id
+GROUP BY u.county
+ORDER BY total_transaction_value DESC
+LIMIT 5;
