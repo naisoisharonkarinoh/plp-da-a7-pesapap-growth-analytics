@@ -77,3 +77,34 @@ FROM transactions
 GROUP BY product
 HAVING AVG(amount) > 1300
 ORDER BY average_transaction_value DESC;
+ 
+-- (g) Business question: How many users fall into each transaction value tier?
+WITH user_values AS (
+    SELECT
+        user_id,
+        SUM(amount) AS total_value
+    FROM transactions
+    GROUP BY user_id
+),
+user_tiers AS (
+    SELECT
+        user_id,
+        total_value,
+        CASE
+            WHEN total_value >= 10000 THEN 'High'
+            WHEN total_value >= 4000 THEN 'Medium'
+            ELSE 'Low'
+        END AS value_tier
+    FROM user_values
+)
+SELECT
+    value_tier,
+    COUNT(*) AS user_count
+FROM user_tiers
+GROUP BY value_tier
+ORDER BY
+    CASE value_tier
+        WHEN 'High' THEN 1
+        WHEN 'Medium' THEN 2
+        WHEN 'Low' THEN 3
+    END;
