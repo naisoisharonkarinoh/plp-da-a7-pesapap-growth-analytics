@@ -27,3 +27,20 @@ JOIN users AS u
 GROUP BY u.county
 ORDER BY total_transaction_value DESC
 LIMIT 5;
+ 
+-- (c) Business question: What is the monthly transaction value and cumulative running total?
+WITH monthly_sales AS (
+    SELECT
+        strftime('%Y-%m', txn_date) AS month,
+        SUM(amount) AS monthly_transaction_value
+    FROM transactions
+    GROUP BY strftime('%Y-%m', txn_date)
+)
+SELECT
+    month,
+    monthly_transaction_value,
+    SUM(monthly_transaction_value) OVER (
+        ORDER BY month
+    ) AS running_total
+FROM monthly_sales
+ORDER BY month;
