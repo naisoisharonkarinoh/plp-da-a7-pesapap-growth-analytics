@@ -67,3 +67,13 @@ FROM transactions AS t
 GROUP BY t.user_id
 ORDER BY user_rank
 LIMIT 10;
+ 
+-- (f) Business question: Which products have an average transaction amount above KES 1,300?
+SELECT
+    product,
+    AVG(amount) AS average_transaction_value,
+    COUNT(*) AS transaction_count
+FROM transactions
+GROUP BY product
+HAVING AVG(amount) > 1300
+ORDER BY average_transaction_value DESC;
