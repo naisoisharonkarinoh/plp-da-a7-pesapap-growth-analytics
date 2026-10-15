@@ -44,3 +44,14 @@ SELECT
     ) AS running_total
 FROM monthly_sales
 ORDER BY month;
+ 
+-- (d) Business question: Which acquisition channels generate the highest transaction value?
+SELECT
+    u.acquisition_channel,
+    SUM(t.amount) AS total_transaction_value,
+    COUNT(t.txn_id) AS transaction_count
+FROM users AS u
+JOIN transactions AS t
+    ON u.user_id = t.user_id
+GROUP BY u.acquisition_channel
+ORDER BY total_transaction_value DESC;
