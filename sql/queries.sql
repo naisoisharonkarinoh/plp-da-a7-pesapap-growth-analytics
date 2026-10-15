@@ -55,3 +55,15 @@ JOIN transactions AS t
     ON u.user_id = t.user_id
 GROUP BY u.acquisition_channel
 ORDER BY total_transaction_value DESC;
+ 
+-- (e) Business question: Who are the top 10 users by total transaction value?
+SELECT
+    t.user_id,
+    SUM(t.amount) AS total_transaction_value,
+    RANK() OVER (
+        ORDER BY SUM(t.amount) DESC
+    ) AS user_rank
+FROM transactions AS t
+GROUP BY t.user_id
+ORDER BY user_rank
+LIMIT 10;
